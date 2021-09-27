@@ -36,7 +36,7 @@ public class WebFE_Automation {
         driver.get("https://www.demoblaze.com/index.html");
 
         String [] purchaseList = {"Sony vaio i5", "Dell i7 8gb"};
-        int expectedAmount =0;
+        Integer expectedAmount =0;
 
         for (String item : purchaseList) {
             expectedAmount += addCart("Laptops", item);
@@ -52,13 +52,11 @@ public class WebFE_Automation {
         Thread.sleep(1000);
         driver.findElement(By.xpath("//button[.='Place Order']")).click();
 
-        customerFormFill();
+        fillCustomerForm();
 
         Integer actualAmount = getLogIDAndAmount();
-        String actualPrice = ""+actualAmount;
-        String expectedPrice = ""+expectedAmount;
 
-        Assert.assertEquals(actualPrice,expectedPrice,"purchase amount is not as expected");
+        Assert.assertEquals(actualAmount,expectedAmount,"purchase amount is not as expected");
 
         driver.findElement(By.xpath("//button[.='OK']"));
     }
@@ -73,7 +71,7 @@ public class WebFE_Automation {
         return Integer.parseInt(itemPrice);
     }
 
-    private Integer getLogIDAndAmount() {
+    private int getLogIDAndAmount() {
         String logPurchase = driver.findElement(By.cssSelector(".lead.text-muted")).getText();
 
         String logID = logPurchase.split("Amount")[0];
@@ -100,7 +98,7 @@ public class WebFE_Automation {
         return Integer.parseInt(itemPrice);
     }
 
-    private void customerFormFill() {
+    private void fillCustomerForm() {
 
         Faker faker = new Faker();
 
