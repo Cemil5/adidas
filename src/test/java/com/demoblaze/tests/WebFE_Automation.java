@@ -5,7 +5,6 @@ import com.github.javafaker.Faker;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -13,7 +12,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class WebFE_Automation {
@@ -38,17 +36,16 @@ public class WebFE_Automation {
         driver.get("https://www.demoblaze.com/index.html");
 
         String [] purchaseList = {"Sony vaio i5", "Dell i7 8gb"};
+        int expectedAmount =0;
 
-        addCart("Laptops", purchaseList[0]);
-        driver.findElement(By.xpath("//a[@href='index.html']")).click(); // go to home page
-
-        addCart("Laptops", purchaseList[1]);
+        for (String item : purchaseList) {
+            expectedAmount += addCart("Laptops", item);
+            driver.findElement(By.xpath("//a[@href='index.html']")).click(); // go to home page
+        }
 
         driver.findElement(By.id("cartur")).click();
 
-        // delete an item
-        WebElement deleteItem = driver.findElement(By.xpath("//td[.='" + purchaseList[1] + "']/../td[4]/a"));
-        deleteItem.click();
+        expectedAmount -= deleteItem(purchaseList[1]);
 
       //  wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("totalp")));
       //  wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Delete")));
@@ -57,32 +54,50 @@ public class WebFE_Automation {
 
         customerFormFill();
 
-        String actualAmount =getLogIDAndAmount();
-        String expectedAmount = "790";
+        Integer actualAmount = getLogIDAndAmount();
+        String actualPrice = ""+actualAmount;
+        String expectedPrice = ""+expectedAmount;
 
-        Assert.assertEquals(actualAmount,expectedAmount,"purchase amount is not as expected");
+        Assert.assertEquals(actualPrice,expectedPrice,"purchase amount is not as expected");
 
         driver.findElement(By.xpath("//button[.='OK']"));
     }
 
-    private String getLogIDAndAmount() {
+    private int deleteItem(String item) {
+        String itemPath = "//td[.='" + item + "']";
+        String itemPricePath = itemPath + "/../td[3]";
+        String deleteLinkPath = itemPath + "/../td[4]/a";
+        String itemPrice = driver.findElement(By.xpath(itemPricePath)).getText();
+
+        driver.findElement(By.xpath(deleteLinkPath)).click();
+        return Integer.parseInt(itemPrice);
+    }
+
+    private Integer getLogIDAndAmount() {
         String logPurchase = driver.findElement(By.cssSelector(".lead.text-muted")).getText();
-        System.out.println("logPurchase = " + logPurchase);
 
         String logID = logPurchase.split("Amount")[0];
         System.out.println("logID = " + logID);
-        return logPurchase.substring(logPurchase.indexOf("Amount")+8, logPurchase.indexOf(" USD"));
+
+        String actualPrice = logPurchase.substring(logPurchase.indexOf("Amount")+8, logPurchase.indexOf(" USD"));
+        return Integer.parseInt(actualPrice);
     }
 
-    private void addCart(String category, String item) {
+    private int addCart(String category, String item) {
 
         driver.findElement(By.xpath("//a[text()='"+ category +"']")).click();
-        driver.findElement(By.xpath("//a[text()='"+ item +"']")).click();
+        String itemNamePath = "//a[text()='"+ item +"']";
+        String itemPricePath = itemNamePath + "/../../h5";
+        String itemPrice = driver.findElement(By.xpath(itemPricePath)).getText();
+        itemPrice = itemPrice.substring(1);
+
+        driver.findElement(By.xpath(itemNamePath)).click();
         driver.findElement(By.xpath("//a[text()='Add to cart']")).click();
 
         wait.until(ExpectedConditions.alertIsPresent());
         Alert alert = driver.switchTo().alert();
         alert.accept();
+        return Integer.parseInt(itemPrice);
     }
 
     private void customerFormFill() {
