@@ -7,8 +7,6 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class WebDriverFactory {
-    public WebDriverFactory(String chrome) {
-    }
    /* parametername: browserType
     return FirefoxDriver or firefoxdriver
     method name getDriver */
