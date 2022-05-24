@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-public class WebFE_Automation {
+public class StreamTest {
 
     WebDriver driver= WebDriverFactory.getDriver("chrome");
     WebDriverWait wait = new WebDriverWait(driver,10);
@@ -34,25 +34,10 @@ public class WebFE_Automation {
       //  driver.quit();
     }
 
-    Stream<By> object = Stream.of(By.xpath("//a[@href='index.html']"),
-            By.xpath("//a[@href='index.html']"));
-
     Stream<String> purchaseList = Stream.of("Sony vaio i5", "Dell i7 8gb");
 
     @Test
-    public void testStream(){
-        driver.get("https://www.demoblaze.com/index.html");
-
-        Integer expectedAmount =0;
-        purchaseList.forEach(item -> {
-            addCart("Laptops", item);
-            object.forEach(by -> driver.findElement(by).click());
-        });
-
-    }
-
-    @Test
-    public void test() throws InterruptedException {
+    public void testStream() throws InterruptedException {
         driver.get("https://www.demoblaze.com/index.html");
 
        // String [] purchaseList = {"Sony vaio i5", "Dell i7 8gb"};
@@ -71,10 +56,6 @@ public class WebFE_Automation {
 
         driver.findElement(By.id("cartur")).click();
 
-    //    expectedAmount -= deleteItem(purchaseList[1]);
-
-      //  wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("totalp")));
-      //  wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Delete")));
         Thread.sleep(1000);
         driver.findElement(By.xpath("//button[.='Place Order']")).click();
 
